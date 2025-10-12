@@ -24,7 +24,6 @@ from typing import Optional, Tuple, Any
 import requests
 from dotenv import load_dotenv
 from flask import Flask, request
-from waitress import serve
 
 from telegram import (
     Update, InlineKeyboardMarkup, InlineKeyboardButton, ReplyKeyboardRemove
