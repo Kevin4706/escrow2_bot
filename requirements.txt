@@ -1,5 +1,4 @@
 python-telegram-bot==20.7
 Flask==2.2.5
-waitress==2.2.0
 python-dotenv==1.1.1
 requests==2.31.0
