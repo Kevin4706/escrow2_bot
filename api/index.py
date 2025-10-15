@@ -168,16 +168,29 @@ def okx_get_balances() -> Tuple[int, Any]:
         logger.error(f"OKX balance error: {e}")
         return 500, {"error": str(e)}
 
-def okx_withdraw(ccy: str, amt: str, to_addr: str, chain: str = "TRC20"):
+def okx_withdraw(ccy: str, amt: str, to_addr: str = None, chain: str = "TRC20"):
+    """
+    Withdraw crypto via OKX API.
+    Defaults to TRC20 network for USDT.
+    If to_addr is None, it uses BOT_WALLET from .env
+    """
+    # Use default wallet if not provided
+    if not to_addr:
+        to_addr = os.getenv("BOT_WALLET")
+        if not to_addr:
+            logger.error("No withdrawal address provided and BOT_WALLET not set in .env")
+            return 400, {"error": "Withdrawal address missing"}
+
     path = "/api/v5/asset/withdrawal"
     url = OKX_API_BASE + path
 
+    # Ensure amount is a string (OKX API expects string)
     body = {
         "ccy": ccy,
         "amt": str(amt),
-        "dest": "4",          # external address
+        "dest": "4",          # external wallet
         "toAddr": to_addr,
-        "chainName": chain    # TRC20 only
+        "chainName": chain    # TRC20 network
     }
 
     headers, body_str = okx_headers("POST", path, body)
@@ -185,13 +198,16 @@ def okx_withdraw(ccy: str, amt: str, to_addr: str, chain: str = "TRC20"):
     try:
         r = requests.post(url, headers=headers, data=body_str, timeout=25)
         response = r.json()
+
         if r.status_code == 200 and response.get("code") == "0":
-            logger.info(f"OKX withdraw successful: {response}")
+            logger.info(f"✅ OKX withdraw successful: {response}")
         else:
             logger.error(f"❌ OKX withdraw failed: {response}")
+
         return r.status_code, response
+
     except Exception as e:
-        logger.error(f"OKX withdraw error: {e}")
+        logger.error(f"⚠️ OKX withdraw error: {e}")
         return 500, {"error": str(e)}
 
 def safe_decimal(s: str) -> Optional[Decimal]:
