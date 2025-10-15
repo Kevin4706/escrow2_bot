@@ -22,7 +22,7 @@ from typing import Optional, Tuple, Any
 import requests
 from dotenv import load_dotenv
 from telegram import (
-    Update, InlineKeyboardMarkup, InlineKeyboardButton, ReplyKeyboardRemove
+    Update, InlineKeyboardMarkup, InlineKeyboardButton, ReplyKeyboardRemove, ForceReply
 )
 from telegram.ext import (
     Application, CommandHandler, CallbackQueryHandler, MessageHandler,
@@ -257,7 +257,11 @@ async def newescrow_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
         'step': 'amount'
     }
     
-    await update.message.reply_text(get_msg("enter_amount", lang), parse_mode='HTML')
+    await update.message.reply_text(
+        get_msg("enter_amount", lang), 
+        parse_mode='HTML',
+        reply_markup=ForceReply(selective=True)
+    )
 
 async def text_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Handle text messages during escrow creation and wallet setup"""
@@ -307,7 +311,11 @@ async def text_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
             
             escrow_data['amount'] = str(amount)
             escrow_data['step'] = 'description'
-            await update.message.reply_text(get_msg("enter_description", lang), parse_mode='HTML')
+            await update.message.reply_text(
+                get_msg("enter_description", lang), 
+                parse_mode='HTML',
+                reply_markup=ForceReply(selective=True)
+            )
         
         elif step == 'description':
             description = text[:200]
@@ -387,7 +395,12 @@ async def callback_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
             'seller_id': user_id
         }
         
-        await q.edit_message_text(get_msg("seller_prompt", lang), parse_mode='HTML')
+        await q.message.reply_text(
+            get_msg("seller_prompt", lang), 
+            parse_mode='HTML',
+            reply_markup=ForceReply(selective=True)
+        )
+        await q.edit_message_text("✅ Seller registration started. Please reply to the next message with your wallet address.")
     
     elif data.startswith("view_"):
         escrow_id = int(data.split("_")[1])
