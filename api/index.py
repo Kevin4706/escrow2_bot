@@ -18,6 +18,7 @@ import sqlite3
 import logging
 from decimal import Decimal, InvalidOperation
 from typing import Optional, Tuple, Any
+from datetime import datetime, timezone
 
 import requests
 from dotenv import load_dotenv
@@ -142,7 +143,9 @@ def okx_sign(timestamp: str, method: str, request_path: str, body: str, secret: 
     return base64.b64encode(mac.digest()).decode()
 
 def okx_headers(method: str, request_path: str, body: Optional[dict] = None):
-    ts = str(time.time())
+    # UTC timestamp in ISO8601 format with milliseconds
+    ts = datetime.now(timezone.utc).isoformat(timespec="milliseconds").replace("+00:00", "Z")
+
     body_str = json.dumps(body) if body else ""
     sig = okx_sign(ts, method, request_path, body_str, OKX_API_SECRET or "")
     headers = {
