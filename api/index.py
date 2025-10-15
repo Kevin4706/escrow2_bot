@@ -169,19 +169,15 @@ def okx_get_balances() -> Tuple[int, Any]:
         return 500, {"error": str(e)}
 
 def okx_withdraw(ccy: str, amt: str, to_addr: str, chain: str = "TRC20"):
-    """
-    Withdraw crypto via OKX API using TRC20 (or other supported chain).
-    Handles headers, UTC timestamp, and error logging.
-    """
     path = "/api/v5/asset/withdrawal"
     url = OKX_API_BASE + path
 
     body = {
         "ccy": ccy,
         "amt": str(amt),
-        "dest": "4",          # 4 = external crypto address
+        "dest": "4",          # external address
         "toAddr": to_addr,
-        "chainName": chain    # must match OKX supported chain
+        "chainName": chain    # TRC20 only
     }
 
     headers, body_str = okx_headers("POST", path, body)
