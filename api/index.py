@@ -631,5 +631,5 @@ bootstrap_async_loop()
 # Run the Flask app using waitress when run locally; Vercel will use gunicorn/its runtime
 if __name__ == "__main__":
     port = int(os.getenv("PORT", "8080"))
-    logger.info("Starting Flask (waitress) on port %s", port)
-    serve(flask_app, host="0.0.0.0", port=port)
+    logger.info("Starting Flask (built-in) on port %s", port)
+    flask_app.run(host="0.0.0.0", port=port)
