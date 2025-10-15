@@ -582,10 +582,13 @@ application = ApplicationBuilder().token(BOT_TOKEN).build()
 register_handlers(application)
 
 # Start the Application in background asyncio loop so it can process update_queue
+# Start the Application in background asyncio loop so it can process update_queue
 async def start_app_background(app):
     await app.initialize()
     await app.start()
     logger.info("Telegram Application initialized & started (background).")
+    await app.updater.start_polling()
+    logger.info("Bot is now polling for updates...")
 
 # Create Flask app for webhook
 flask_app = Flask(__name__)
