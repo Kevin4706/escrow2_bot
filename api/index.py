@@ -29,8 +29,21 @@ from telegram.ext import (
     ContextTypes, filters
 )
 
-load_dotenv()
+# --- ✅ Ensure .env is always loaded, no matter where script runs ---
+# Detect absolute path to this file (api/index.py)
+CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
 
+# Look for .env in the same directory as index.py
+ENV_PATH = os.path.join(CURRENT_DIR, ".env")
+
+# Load environment variables
+if os.path.exists(ENV_PATH):
+    load_dotenv(dotenv_path=ENV_PATH)
+    print(f"[INFO] Loaded environment variables from: {ENV_PATH}")
+else:
+    print(f"[WARNING] .env file not found at: {ENV_PATH}")
+
+# --- ✅ Configuration Variables ---
 BOT_TOKEN = os.getenv("BOT_TOKEN")
 ADMIN_TELEGRAM_ID = int(os.getenv("ADMIN_ID") or 0)
 OKX_API_KEY = os.getenv("OKX_API_KEY")
@@ -40,8 +53,14 @@ OKX_API_BASE = os.getenv("OKX_API_BASE", "https://www.okx.com").rstrip("/")
 DEPOSIT_ADDRESS = os.getenv("DEPOSIT_ADDRESS", "") or "Set_DEPOSIT_ADDRESS_IN_ENV"
 SQLITE_FILE = os.getenv("SQLITE_FILE", "escrow_bot.db")
 
+# --- ✅ Logging Setup ---
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("escrow_bot")
+
+# Optional: Verify important environment variables are loaded
+logger.info(f"BOT_TOKEN loaded: {'✅' if BOT_TOKEN else '❌'}")
+logger.info(f"ADMIN_TELEGRAM_ID: {ADMIN_TELEGRAM_ID}")
+logger.info(f"DEPOSIT_ADDRESS: {DEPOSIT_ADDRESS}")
 
 def init_db(path: str = SQLITE_FILE):
     """Initialize database with improved schema for group escrows"""
